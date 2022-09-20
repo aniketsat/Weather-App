@@ -1,23 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import { fetchWeather } from "./api/fetchWeather";
+import "./App.css";
 
 function App() {
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState({});
+
+  useEffect(() => {
+    fetchWeather("Bhubaneswar").then((data) => setWeather(data));
+  }, []);
+
+  const search = async (e) => {
+    if (e.key === "Enter") {
+      const data = await fetchWeather(city);
+      setWeather(data);
+      setCity("");
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="main-container">
+      <input
+        type="text"
+        className="search"
+        placeholder="Search..."
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        onKeyDownCapture={search}
+      />
+
+      {weather.main && (
+        <div className="city">
+          <h2 className="city-name">
+            <span>{weather.name}</span>
+            <sup>{weather.sys.country}</sup>
+          </h2>
+          <div className="city-temp">
+            {Math.round(weather.main.temp)}
+            <sup>&deg;C</sup>
+            <div>{/* // Feels like temp */}</div>
+          </div>
+          <p>
+            Feels like:{" "}
+            <strong>{Math.round(weather.main.feels_like)}&deg;C</strong>
+          </p>
+          <div className="info">
+            <img
+              className="city-icon"
+              src={`http://openweathermap.org/img/w/${weather.weather[0].icon}.png`}
+              alt={weather.weather[0].description}
+            />
+            <p>{weather.weather[0].description}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
