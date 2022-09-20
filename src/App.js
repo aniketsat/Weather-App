@@ -38,7 +38,6 @@ function App() {
           <div className="city-temp">
             {Math.round(weather.main.temp)}
             <sup>&deg;C</sup>
-            <div>{/* // Feels like temp */}</div>
           </div>
           <p>
             Feels like:{" "}
