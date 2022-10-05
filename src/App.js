@@ -1,13 +1,30 @@
 import { useState, useEffect } from "react";
 import { fetchWeather } from "./api/fetchWeather";
 import "./App.css";
+import axios from "axios";
 
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState({});
 
   useEffect(() => {
-    fetchWeather("Bhubaneswar").then((data) => setWeather(data));
+    // Get the user's location
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      console.log(latitude, longitude);
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${process.env.REACT_APP_API_KEY}&units=metric`
+        )
+        .then((response) => {
+          // console.log(response.data);
+          setWeather(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          fetchWeather("Bhubaneswar").then((data) => setWeather(data));
+        });
+    });
   }, []);
 
   const search = async (e) => {
